@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Developing with Step Functions</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.0"></script>
+</head>
+
+<body>
+
+
+<div class="container" id="app">
+
+
+    <div class="jumbotron pt-4 pb-4">
+        <img src="images/AWS_logo_RGB_REV.png" title="AWS" alt="AWS" width="160" height="*" class="mx-auto d-block"/>
+        <blockquote class="blockquote text-center">
+            <h1 class="display-4 pt-4">Developing with AWS Step Functions</h1>
+        </blockquote>
+    </div>
+
+
+    <div class="row">
+        <div class="col">
+            <div class="row">
+            <form id="incidentForm" v-on:submit.prevent="createIncident">
+                <h3>Create new plagiarism incident</h3>
+                <div class="form-group">
+                    <label for="studentID">Student ID</label>
+                    <input type="text" class="form-control col-8" id="studentID" v-model="incidentData.studentId"/>
+                </div>
+                <div class="form-group">
+                    <label for="incidentDate">Incident Date</label>
+                    <input type="date" class="form-control col-8" id="incidentDate" v-model="incidentData.incidentDate"/>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Create incident</button>
+                    <button type="button" class="btn btn-secondary" v-on:click="resetForm">New incident</button>
+                </div>
+            </form>
+            </div>
+            <div class="row">
+                <div class="alert alert-success" role="alert" v-show="showMessage">
+                    Created new incident for Student ID: {{ incidentData.studentId }}
+                </div>
+            </div>
+
+        </div>
+        <div class="col">
+            <img src="images/stepfunction.png" width="500">
+        </div>
+    </div>
+
+</div>
+
+
+</body>
+
+<script type="application/javascript">
+
+    var app = new Vue({
+        el: '#app',
+        data: function () {
+
+            return {
+                incidentData: {
+                    studentId: '',
+                    incidentDate: ''
+                },
+                showMessage: false
+            }
+        },
+        methods: {
+
+            resetForm: function () {
+                this.incidentData.studentId = ''
+                this.incidentData.incidentDate = ''
+                this.showMessage = false
+            },
+
+            createIncident: function () {
+
+                console.log(this.data);
+
+                // POST /someUrl
+                this.$http.post('https://2aopin6jti.execute-api.ap-southeast-2.amazonaws.com/v1/incident', this.incidentData)
+                    .then(response => {
+                        // get status
+                        console.log(response.status);
+
+                        this.showMessage = true;
+
+                    }, error => {
+                        console.log(error)
+
+                });
+            }
+    } // end methods
+
+    })
+
+</script>
+
+</html>
