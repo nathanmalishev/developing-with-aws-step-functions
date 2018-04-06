@@ -1,0 +1,75 @@
+{
+  "Comment": "Developing with AWS Step Functions Demo",
+  "StartAt": "RegisterIncident",
+  "States": {
+    "RegisterIncident": {
+      "Type": "Task",
+      "Comment": "Register the plagiarism incident in the system and begin workflow execution.",
+      "Resource": "arn:aws:lambda:us-east-1:538510314095:function:plagiarism-violations-dem-RegisterPlagiarismIncide-1DZCZX4JPYIAE",
+      "Next": "ScheduleExam"
+    },
+    "ScheduleExam": {
+      "Type": "Task",
+      "Comment": "Set the next exam deadline for the student to complete the exam.",
+      "Resource": "arn:aws:lambda:us-east-1:538510314095:function:plagiarism-violations-dem-SchedulePlagiarismExamFu-19BF0C2DYGT5V",
+      "Next": "SendNotification"
+
+    },
+    "SendNotification": {
+      "Type": "Task",
+      "Comment": "Send email confirmation to the student with the date the exam completion deadline.",
+      "Resource": "arn:aws:lambda:us-east-1:538510314095:function:plagiarism-violations-dem-SendExamNotificationFunc-1S6K6FQLJ17A8",
+      "Next": "ExamConfirmationPending"
+    },
+    "ExamConfirmationPending": {
+      "Type": "Wait",
+      "Comment": "Waiting period exam expiration deadline.",
+      "TimestampPath": "$.exam_date",
+      "Next": "ValidateExamResults"
+    },
+    "ValidateExamResults": {
+      "Comment": "Validates the exam results.",
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:538510314095:function:plagiarism-violations-dem-ValidateExamResultsFunct-RET410C7OZFL",
+      "Next": "HasStudentPassedExam"
+    },
+    "HasStudentPassedExam": {
+      "Type": "Choice",
+      "Comment": "If the student has a score less than 67, they need to reschedule",
+      "Choices": [{
+          "Variable": "$.score",
+          "NumericGreaterThanEquals": 67,
+          "Next": "ResolveIncident"
+        },
+        {
+          "And": [{
+              "Variable": "$.score",
+              "NumericLessThan": 66
+            },
+            {
+              "Variable": "$.score",
+              "NumericGreaterThanEquals": 1
+            }
+          ],
+          "Next": "ScheduleExam"
+        },
+        {
+          "Variable": "$.score",
+          "NumericEquals": 0,
+          "Next": "TakeAdministrativeAction"
+        }
+      ]
+    },
+    "TakeAdministrativeAction": {
+      "Type": "Fail",
+      "Cause": "Failed to meet assessment criteria.",
+      "Error": "The student has failed to meet criteria for resolving the plagiarism assessment. Terminate student!"
+    },
+    "ResolveIncident": {
+      "Type": "Task",
+      "Comment": "Resolves the incident for the student.",
+      "End": true,
+      "Resource": "arn:aws:lambda:us-east-1:538510314095:function:plagiarism-violations-dem-SchedulePlagiarismExamFu-19BF0C2DYGT5V"
+    }
+  }
+}
