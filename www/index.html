@@ -11,23 +11,26 @@
 
 <body>
 
-
-<div class="container" id="app">
-
-
-    <div class="jumbotron pt-4 pb-4">
-        <img src="images/AWS_logo_RGB_REV.png" title="AWS" alt="AWS" width="160" height="*" class="mx-auto d-block"/>
-        <blockquote class="blockquote text-center">
-            <h1 class="display-4 pt-4">Developing with AWS Step Functions</h1>
-        </blockquote>
-    </div>
-
-
+<div class="container">
     <div class="row">
         <div class="col">
+            <div class="jumbotron pt-4 pb-4">
+                <img src="images/AWS_logo_RGB_REV.png" title="AWS" alt="AWS" width="160" height="*" class="mx-auto d-block"/>
+                <blockquote class="blockquote text-center">
+                    <h1 class="display-4 pt-4">Developing with AWS Step Functions</h1>
+                </blockquote>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container" id="app">
+     <div class="row">
+        <div class="col">
             <div class="row">
+                <div class="col">
             <form id="incidentForm" v-on:submit.prevent="createIncident">
-                <h3>Create new plagiarism incident</h3>
+                <h3 class="text-primary">Create new plagiarism incident</h3>
                 <div class="form-group">
                     <label for="studentID">Student ID</label>
                     <input type="text" class="form-control col-8" id="studentID" v-model="incidentData.studentId"/>
@@ -42,7 +45,8 @@
                 </div>
             </form>
             </div>
-            <div class="row">
+            </div>
+            <div>
                 <div class="alert alert-success" role="alert" v-show="showMessage">
                     Created new incident for Student ID: {{ incidentData.studentId }}
                 </div>
@@ -50,12 +54,29 @@
 
         </div>
         <div class="col">
-            <img src="images/stepfunction.png" width="500">
+            <div class="card text-white bg-secondary ">
+                <div class="card-header">SCENARIO</div>
+                <div class="card-body">
+                    <p>University students caught plagiarising on exams and assignments are asked required to take exams
+                        to test that know how to reference properly. Students get three attempts before action is taken. </p>
+
+                    <p>This demo uses exposes an <a href="https://aws.amazon.com/step-functions/">AWS Step Function</a>  via an
+                        <a href="https://aws.amazon.com/api-gateway/">Amazon API Gateway</a>. The step-function definition invokes
+                        tasks via <a href="https://aws.amazon.com/lambda/">AWS Lambda</a> (Python 3.6), that store results in <a href="https://aws.amazon.com/dynamodb">Amazon DynamoDB</a>. Notifications are implemented
+                        via <a href="https://aws.amazon.com/dynamodb">Amazon SNS</a> and <a href="https://aws.amazon.com/xray/">AWS X-Ray</a> provides distributed tracing capability.</p>
+                </div>
+            </div>
+
+
+            <img src="images/stepfunction.png" class="img-fluid pt-5" alt="state-machine" />
+
         </div>
     </div>
 
-</div>
 
+
+
+</div>
 
 </body>
 
@@ -86,7 +107,7 @@
                 console.log(this.data);
 
                 // POST /someUrl
-                this.$http.post('https://2aopin6jti.execute-api.ap-southeast-2.amazonaws.com/v1/incident', this.incidentData)
+                this.$http.post('https://yvj64ae5se.execute-api.ap-southeast-2.amazonaws.com/v1/incident', this.incidentData)
                     .then(response => {
                         // get status
                         console.log(response.status);
