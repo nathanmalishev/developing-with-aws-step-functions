@@ -2,11 +2,26 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Creates the Lambda functions for the Plagarism Violations Step Functions Demo
 
+Parameters:
+    NotificationEmail:
+        Default: sliedig.aws@gmail.com
+        Type: String
+        Description: Email address to subscribe to SNS topic and receive notifications from Plagiarism Violations System
+
+######   ##        #######  ########     ###    ##        ######  
+##    ##  ##       ##     ## ##     ##   ## ##   ##       ##    ## 
+##        ##       ##     ## ##     ##  ##   ##  ##       ##       
+##   #### ##       ##     ## ########  ##     ## ##        ######  
+##    ##  ##       ##     ## ##     ## ######### ##             ## 
+##    ##  ##       ##     ## ##     ## ##     ## ##       ##    ## 
+ ######   ########  #######  ########  ##     ## ########  ######  
+ 
 Globals:
   Function:
     Runtime: python3.6
     Handler: lambda_function.lambda_handler
-    Timeout: 180
+    Timeout: 30
+    Tracing: Active  
     Environment:
         Variables:
             TABLE_NAME: !Ref IncidentsTable
@@ -29,42 +44,67 @@ Resources:
       Properties:
           Description: DevelopingWithStepFunctions - Registers the  incident in the system.
           CodeUri: registerIncident/dev
-          Role: !GetAtt ExecutionRole.Arn
+          Policies:
+            - AWSLambdaBasicExecutionRole
+            - AWSXrayWriteOnlyAccess
+            - DynamoDBCrudPolicy:
+                TableName: !Ref IncidentsTable   
 
   ResolveIncidentFunction:
       Type: AWS::Serverless::Function
       Properties:
           Description: DevelopingWithStepFunctions - Marks the  incident as resolved.
           CodeUri: resolveIncident/dev 
-          Role: !GetAtt ExecutionRole.Arn
+          Policies:
+            - AWSLambdaBasicExecutionRole
+            - AWSXrayWriteOnlyAccess
+            - DynamoDBCrudPolicy:
+                TableName: !Ref IncidentsTable   
 
   ScheduleExamFunction:
       Type: AWS::Serverless::Function
       Properties:
           Description: DevelopingWithStepFunctions - Schedules the  Exam for the student to complete.
           CodeUri: scheduleExam/dev
-          Role: !GetAtt ExecutionRole.Arn
+          Policies:
+            - AWSLambdaBasicExecutionRole
+            - AWSXrayWriteOnlyAccess
+            - DynamoDBCrudPolicy:
+                TableName: !Ref IncidentsTable   
 
   SendExamNotificationFunction:
       Type: AWS::Serverless::Function
       Properties:
           Description: DevelopingWithStepFunctions - Send email to the student about their  Exam and when it needs to be completed by.
           CodeUri: sendNotification/dev
-          Role: !GetAtt ExecutionRole.Arn
+          Policies:
+            - AWSLambdaBasicExecutionRole
+            - AWSXrayWriteOnlyAccess
+            - DynamoDBCrudPolicy:
+                TableName: !Ref IncidentsTable   
 
   TakeAdministrativeActionFunction:
       Type: AWS::Serverless::Function
       Properties:
           Description: DevelopingWithStepFunctions - Send email to administrative staff to notify staff that the student has failed all tests and action needs to be taken.
           CodeUri: adminAction/dev 
-          Role: !GetAtt ExecutionRole.Arn
+          Policies:
+            - AWSLambdaBasicExecutionRole
+            - AWSXrayWriteOnlyAccess
+            - DynamoDBCrudPolicy:
+                TableName: !Ref IncidentsTable   
 
   ValidateExamResultsFunction:
       Type: AWS::Serverless::Function
       Properties:
           Description: DevelopingWithStepFunctions - Validates the exam results.
           CodeUri: validateExam/dev
-          Role: !GetAtt ExecutionRole.Arn
+          Policies:
+            - AWSLambdaBasicExecutionRole
+            - AWSXrayWriteOnlyAccess
+            - DynamoDBCrudPolicy:
+                TableName: !Ref IncidentsTable     
+
 
    ###    ########  #### 
   ## ##   ##     ##  ##  
@@ -81,9 +121,8 @@ Resources:
         DefinitionBody:
           swagger: "2.0"
           info:
-            version: "2018-03-29T05:52:43Z"
-            title: "syd-summit-demo"
-          host: "2aopin6jti.execute-api.ap-southeast-2.amazonaws.com"
+            version: "1.0"
+            title: "DevelopingWithStepFunctionsApi"
           basePath: "/v1"
           schemes:
           - "https"
@@ -95,7 +134,7 @@ Resources:
                 produces:
                 - "application/json"
                 responses:
-                  200:
+                  "200":
                     description: "200 response"
                     schema:
                       $ref: "#/definitions/Empty"
@@ -111,13 +150,12 @@ Resources:
                       responseParameters:
                         method.response.header.Access-Control-Allow-Origin: "'*'"
                   requestTemplates:
-                        requestTemplates:
-                          application/json: !Sub |
-                            {
-                              "input": "$util.escapeJavaScript($input.json('$'))",
-                              "name": "$context.requestId",
-                              "stateMachineArn": "${StepFunctionStateMachine}"
-                            }
+                    application/json: !Sub |
+                      {
+                        "input": "$util.escapeJavaScript($input.json('$'))",
+                        "name": "$context.requestId",
+                        "stateMachineArn": "${DevelopingWithStepFunctionsStateMachine}"
+                      }
                   passthroughBehavior: "when_no_templates"
                   httpMethod: "POST"
                   type: "aws"
@@ -127,7 +165,7 @@ Resources:
                 produces:
                 - "application/json"
                 responses:
-                  200:
+                  "200":
                     description: "200 response"
                     schema:
                       $ref: "#/definitions/Empty"
@@ -164,9 +202,11 @@ Resources:
 ##    ##    ##    ##       ##           ##       ##     ## ##   ### ##    ##    ##     ##  ##     ## ##   ### 
  ######     ##    ######## ##           ##        #######  ##    ##  ######     ##    ####  #######  ##    ##  
 
-  StepFunctionStateMachine:
+  DevelopingWithStepFunctionsStateMachine:
     Type: "AWS::StepFunctions::StateMachine"
     Properties:
+      StateMachineName: DevelopingWithStepFunctions
+      RoleArn: !GetAtt StepFunctionsServiceRole.Arn
       DefinitionString: !Sub |
         {
           "Comment": "Developing with AWS Step Functions Demo",
@@ -243,7 +283,6 @@ Resources:
             }
           }
         }
-      RoleArn: !GetAtt StepFunctionsServiceRole.Arn
 
 ########  ##    ## ##    ##    ###    ##     ##  #######  ########  ########  
 ##     ##  ##  ##  ###   ##   ## ##   ###   ### ##     ## ##     ## ##     ## 
@@ -272,27 +311,10 @@ Resources:
  ##  ##     ## ##     ## 
 #### ##     ## ##     ## 
 
-  ExecutionRole:
-      Type: AWS::IAM::Role
-      Properties:
-          AssumeRolePolicyDocument:
-              Statement:
-              - Effect: Allow
-                Principal:
-                  Service:
-                    - lambda.amazonaws.com
-                Action:
-                  - sts:AssumeRole
-          Path: !Join ["", ["/", !Ref "AWS::StackName", "/"]]
-          ManagedPolicyArns:
-              - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
-              - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-
-  # IAM Role API Gateway will assume in order to call StepFunctions StartExecution API
   ApiGatewayStepFunctionsRole:
     Type: "AWS::IAM::Role"
     Properties:
-        Path: "/"
+        Path: !Join ["", ["/", !Ref "AWS::StackName", "/"]]
         AssumeRolePolicyDocument:
           Version: "2012-10-17"
           Statement:
@@ -315,12 +337,12 @@ Resources:
                   Action:
                     - "states:StartExecution"
                   Resource: 
-                    - !Ref StepFunctionStateMachine
+                    - !Ref DevelopingWithStepFunctionsStateMachine
 
   StepFunctionsServiceRole:
       Type: "AWS::IAM::Role"
       Properties:
-          Path: "/"
+          Path: !Join ["", ["/", !Ref "AWS::StackName", "/"]]
           ManagedPolicyArns:
             - "arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess"
           AssumeRolePolicyDocument:
@@ -351,6 +373,21 @@ Resources:
                       - !Sub ${ValidateExamResultsFunction.Arn}
                       - !Sub ${ResolveIncidentFunction.Arn}
                       - !Sub ${TakeAdministrativeActionFunction.Arn}
+
+
+ ######  ##    ##  ######  
+##    ## ###   ## ##    ## 
+##       ####  ## ##       
+ ######  ## ## ##  ######  
+      ## ##  ####       ## 
+##    ## ##   ### ##    ## 
+ ######  ##    ##  ######  
+  DevelopingWithStepFunctionsSNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription:
+      - Endpoint: !Ref NotificationEmail
+        Protocol: email
 
 Outputs:
   RegisterIncidentFunctionArn:
