@@ -1,6 +1,11 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Creates the Lambda functions for the Plagarism Violations Step Functions Demo
+Description: > 
+            Developing with Step Functions Demo application. Scenario - University students caught plagiarising on exams 
+            and assignments are asked required to take exams to test that know how to reference properly. 
+            Students get three attempts before action is taken. This demo uses exposes an AWS Step Function via an Amazon API Gateway. 
+            The step-function definition invokes tasks via AWS Lambda (Python 3.6), that store results in Amazon DynamoDB. 
+            Notifications are implemented via Amazon SNS and AWS X-Ray provides distributed tracing capability.
 
 Parameters:
     NotificationEmail:
@@ -15,7 +20,7 @@ Parameters:
 ##    ##  ##       ##     ## ##     ## ######### ##             ## 
 ##    ##  ##       ##     ## ##     ## ##     ## ##       ##    ## 
  ######   ########  #######  ########  ##     ## ########  ######  
- 
+
 Globals:
   Function:
     Runtime: python3.6
@@ -70,7 +75,9 @@ Resources:
             - AWSLambdaBasicExecutionRole
             - AWSXrayWriteOnlyAccess
             - DynamoDBCrudPolicy:
-                TableName: !Ref IncidentsTable   
+                TableName: !Ref IncidentsTable
+            - SNSPublishMessagePolicy:
+                TopicName: !Ref DevelopingWithStepFunctionsSNSTopic    
 
   SendExamNotificationFunction:
       Type: AWS::Serverless::Function
@@ -82,7 +89,9 @@ Resources:
             - AWSXrayWriteOnlyAccess
             - DynamoDBCrudPolicy:
                 TableName: !Ref IncidentsTable   
-
+            - SNSPublishMessagePolicy:
+                TopicName: !Ref DevelopingWithStepFunctionsSNSTopic
+                
   TakeAdministrativeActionFunction:
       Type: AWS::Serverless::Function
       Properties:
@@ -117,7 +126,7 @@ Resources:
   StepFunctionsAPI:
     Type: AWS::Serverless::Api
     Properties:
-        StageName: dev
+        StageName: v1
         DefinitionBody:
           swagger: "2.0"
           info:
@@ -293,14 +302,14 @@ Resources:
 ########     ##    ##    ## ##     ## ##     ##  #######  ########  ########  
 
   IncidentsTable:
-      Type: AWS::Serverless::SimpleTable
+    Type: AWS::Serverless::SimpleTable
+    Properties:
       PrimaryKey:
         Name: incident_id
         Type: String
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
-
 
 
 ####    ###    ##     ## 
@@ -374,7 +383,6 @@ Resources:
                       - !Sub ${ResolveIncidentFunction.Arn}
                       - !Sub ${TakeAdministrativeActionFunction.Arn}
 
-
  ######  ##    ##  ######  
 ##    ## ###   ## ##    ## 
 ##       ####  ## ##       
@@ -390,15 +398,27 @@ Resources:
         Protocol: email
 
 Outputs:
+  StepFunctionsAPIUrl:
+    Description: API URL
+    Value: !Sub "https://${StepFunctionsAPI}.execute-api.${AWS::Region}.amazonaws.com/v1/incident"
+  StepFunctionsStateMachine:
+    Description: Step Functions State Machine ARN
+    Value: !Ref DevelopingWithStepFunctionsStateMachine
   RegisterIncidentFunctionArn:
-      Value: !GetAtt RegisterIncidentFunction.Arn
+    Description: Register Incident Function ARN
+    Value: !GetAtt RegisterIncidentFunction.Arn
   ScheduleExamFunctionArn:
-      Value: !GetAtt ScheduleExamFunction.Arn
+    Description: Schedule Exam Function ARN
+    Value: !GetAtt ScheduleExamFunction.Arn
   SendExamNotificationFunctionArn:
-      Value: !GetAtt SendExamNotificationFunction.Arn
+    Description: Send Exam Notification Function ARN
+    Value: !GetAtt SendExamNotificationFunction.Arn
   ValidateExamResultsFunctionArn:
-      Value: !GetAtt ValidateExamResultsFunction.Arn
+    Description: Validate Exam Results Function ARN
+    Value: !GetAtt ValidateExamResultsFunction.Arn
   ResolveIncidentFunctionArn:
-      Value: !GetAtt ResolveIncidentFunction.Arn
+    Description: Resolve Incident Function ARN
+    Value: !GetAtt ResolveIncidentFunction.Arn
   TakeAdministrativeActionFunctionArn:
-      Value: !GetAtt TakeAdministrativeActionFunction.Arn
+    Description: Take Administrative Action Function ARN
+    Value: !GetAtt TakeAdministrativeActionFunction.Arn
