@@ -1,6 +1,7 @@
 from __future__ import print_function
 from datetime import datetime
 from datetime import timedelta
+import os
 import uuid
 import boto3
 
@@ -10,8 +11,6 @@ table = dynamodb.Table(incidents_table)
 
 
 def lambda_handler(event, context):
-    print(event)
-
 
     response = table.get_item(
         Key={
@@ -20,23 +19,22 @@ def lambda_handler(event, context):
     )
 
     incident = response['Item']
-
     exam = {
-        exam_id = str(uuid.uuid4()),
-        exam_date = (datetime.now() + timedelta(seconds=10)).strftime('%Y-%m-%dT%H:%M:%SZ')
+        "exam_id": str(uuid.uuid4()),
+        "exam_date": (datetime.now() + timedelta(seconds=10)).strftime('%Y-%m-%dT%H:%M:%SZ'),
+        "score": 0
     }
 
-    incident['exams'].append(exam)
+    if 'exams' in incident:
+        if len(incident['exams']) > 3:
+            raise Exception() # Student cant take mor ethan 3 exams
+        else:
+            incident['exams'].append(exam)
+    else:
+        incident['exams'] = [exam]
 
-    table.update_item(
-        Key={
-            'username': 'janedoe',
-            'last_name': 'Doe'
-        },
-        UpdateExpression='SET age = :val1',
-        ExpressionAttributeValues={
-            ':val1': 26
-        }
+    table.put_item(
+        Item=incident
     )
 
     return event

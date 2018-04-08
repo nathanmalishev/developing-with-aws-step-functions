@@ -75,9 +75,7 @@ Resources:
             - AWSLambdaBasicExecutionRole
             - AWSXrayWriteOnlyAccess
             - DynamoDBCrudPolicy:
-                TableName: !Ref IncidentsTable
-            - SNSPublishMessagePolicy:
-                TopicName: !Ref DevelopingWithStepFunctionsSNSTopic    
+                TableName: !Ref IncidentsTable  
 
   SendExamNotificationFunction:
       Type: AWS::Serverless::Function
@@ -90,8 +88,11 @@ Resources:
             - DynamoDBCrudPolicy:
                 TableName: !Ref IncidentsTable   
             - SNSPublishMessagePolicy:
-                TopicName: !Ref DevelopingWithStepFunctionsSNSTopic
-                
+                TopicName: !GetAtt DevelopingWithStepFunctionsSNSTopic.TopicName
+          Environment:
+              Variables:
+                  TOPIC_ARN: !Ref DevelopingWithStepFunctionsSNSTopic
+
   TakeAdministrativeActionFunction:
       Type: AWS::Serverless::Function
       Properties:
