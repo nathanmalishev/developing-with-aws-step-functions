@@ -1,4 +1,20 @@
 AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  GitHubOwner:
+    Type: String
+    Description: Github 
+  GitHubRepo:
+    Type: String
+    Description: Github 
+  GitHubBranch:
+    Type: String
+    Description: Github 
+  GitHubToken:
+    Type: String
+    Description: Github
+    NoEcho: true
+
 Resources:
 
 ########  ##     ## #### ##       ########  
@@ -71,15 +87,17 @@ Resources:
             Stages:
                 - Name: Source
                   Actions:
-                    - Name: CodeCommitRepo
+                    - Name: GithubRepo
                       ActionTypeId:
                         Category: Source
-                        Owner: AWS
-                        Provider: CodeCommit
+                        Owner: ThirdParty
+                        Provider: GitHub
                         Version: 1
                       Configuration:
-                        RepositoryName: DevelopingWithStepFunctionsRepo # Github?
-                        BranchName: master
+                        Owner: !Ref GitHubOwner
+                        Repo: !Ref GitHubRepo
+                        Branch: !Ref GitHubBranch
+                        OAuthToken: !Ref GitHubToken
                       OutputArtifacts:
                         - Name: SourceCodeAsZip
                       RunOrder: 1
