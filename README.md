@@ -7,8 +7,9 @@ University students caught plagiarising on exams and assignments are required to
 This demo uses exposes an <a href="https://aws.amazon.com/step-functions/">AWS Step Function</a>  via an <a href="https://aws.amazon.com/api-gateway/">Amazon API Gateway</a>. The step-function definition invokes tasks via <a href="https://aws.amazon.com/lambda/">AWS Lambda</a> (Python 3.6), that store results in <a href="https://aws.amazon.com/dynamodb">Amazon DynamoDB</a>. Notifications are implemented via <a href="https://aws.amazon.com/dynamodb">Amazon SNS</a> and <a href="https://aws.amazon.com/xray/">AWS X-Ray</a> provides distributed tracing capability.
 
 ## Architecture
+![Developing With Step Functions](arch.png "Developing With Step Functions")
 
-TODO: add  diagram
+![Developing With Step Functions Pipeline](pipeline.png "Developing With Step Functions Pipeline")
 
 # Credits
 * [heitorlessa/cookiecutter-aws-sam-python](href="https://github.com/heitorlessa/cookiecutter-aws-sam-python)
