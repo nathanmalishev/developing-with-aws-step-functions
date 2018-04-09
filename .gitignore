@@ -1,5 +1,6 @@
 steps/packaged.yaml
 steps/pipeline-parameters.json
+.vscode
 
 # Created by https://www.gitignore.io/api/python,jetbrains,visualstudio
 
