@@ -24,7 +24,7 @@
     "ExamConfirmationPending": {
       "Type": "Wait",
       "Comment": "Waiting period exam expiration deadline.",
-      "TimestampPath": "$.exam_date",
+      "TimestampPath": "$.scheduled_exam.exam.exam_date",
       "Next": "ValidateExamResults"
     },
     "ValidateExamResults": {

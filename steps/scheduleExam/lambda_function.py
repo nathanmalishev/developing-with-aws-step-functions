@@ -37,4 +37,4 @@ def lambda_handler(event, context):
         Item=incident
     )
 
-    return event
+    return incident
