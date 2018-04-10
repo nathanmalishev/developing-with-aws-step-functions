@@ -12,9 +12,11 @@ This demo uses exposes an <a href="https://aws.amazon.com/step-functions/">AWS S
 ![Developing With Step Functions Pipeline](pipeline.png "Developing With Step Functions Pipeline")
 
 # Credits
-* [heitorlessa/cookiecutter-aws-sam-python](href="https://github.com/heitorlessa/cookiecutter-aws-sam-python)
-Cookiecutter SAM for Python Lambda - 
+
+### Cookiecutter SAM for Python Lambda
 A cookiecutter template to create a Serverless App based on Serverless Application Model (SAM) and Python 3.6.
+
+> [heitorlessa/cookiecutter-aws-sam-python](href="https://github.com/heitorlessa/cookiecutter-aws-sam-python)
 
 # Resources
 

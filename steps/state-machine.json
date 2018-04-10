@@ -56,7 +56,7 @@
         {
           "Variable": "$.score",
           "NumericEquals": 0,
-         
+          "Next": "TakeAdministrativeAction"
         }
       ]
     },

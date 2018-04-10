@@ -2,7 +2,7 @@ import boto3
 import json
 import sys
 
-state_machine = json.loads(open("plagiarism-statemachine.json").read())
+state_machine = json.loads(open("state-machine.json").read())
 
 cfn = boto3.client("cloudformation", region_name="us-east-1")
 
