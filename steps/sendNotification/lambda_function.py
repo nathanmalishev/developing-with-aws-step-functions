@@ -20,11 +20,11 @@ def lambda_handler(event, context):
     incident = response['Item']
     
     scheduled_exam = {
-        "incident_id": incident['incident_id']
+        "incident_id": incident['incident_id'],
         "exam": incident['exams'][-1]
     }
     
-    message = "Dear Student ID %s, you have until %d to complete you Plagiarism Violation test. Thank you." % event['student_id'] % scheduled_exam['exam']['exam_date']
+    message = "Dear Student ID {0}, you have until {1} to complete you Plagiarism Violation test. Thank you.".format(event['student_id'], scheduled_exam['exam']['exam_date'])
     subject = "Exam Notification for %s" % event['student_id']
 
     client.publish(

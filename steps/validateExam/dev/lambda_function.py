@@ -8,5 +8,6 @@ def get_random_score():
 
 
 def lambda_handler(event, context):
-    event['score'] = get_random_score()
+
+    event['exam']['score'] = get_random_score()
     return event

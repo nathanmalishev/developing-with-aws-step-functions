@@ -24,7 +24,7 @@
     "ExamConfirmationPending": {
       "Type": "Wait",
       "Comment": "Waiting period exam expiration deadline.",
-      "TimestampPath": "$.scheduled_exam.exam.exam_date",
+      "TimestampPath": "$.exam.exam_date",
       "Next": "ValidateExamResults"
     },
     "ValidateExamResults": {
@@ -37,24 +37,24 @@
       "Type": "Choice",
       "Comment": "If the student has a score less than 67, they need to reschedule",
       "Choices": [{
-          "Variable": "$.score",
+          "Variable": "$.exam.score",
           "NumericGreaterThanEquals": 67,
           "Next": "ResolveIncident"
         },
         {
           "And": [{
-              "Variable": "$.score",
+              "Variable": "$.exam.score",
               "NumericLessThan": 66
             },
             {
-              "Variable": "$.score",
+              "Variable": "$.exam.score",
               "NumericGreaterThanEquals": 1
             }
           ],
           "Next": "ScheduleExam"
         },
         {
-          "Variable": "$.score",
+          "Variable": "$.exam.score",
           "NumericEquals": 0,
           "Next": "TakeAdministrativeAction"
         }
