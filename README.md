@@ -2,7 +2,11 @@
 
 ## The Scenario
 
-<img style="float: right;" src="stepfunction_sm.png">To illustrate the use of [AWS Step Functions](https://aws.amazon.com/step-functions/) I have created a scenario that describes a process where university students caught plagiarising on exams and/or assignments are required to take a test to assess their knowledge of the universities referencing standards.
+To illustrate the use of [AWS Step Functions](https://aws.amazon.com/step-functions/) I have created a scenario that describes a process where university students caught plagiarising on exams and/or assignments are required to take a test to assess their knowledge of the universities referencing standards.
+
+Visually, the process looks like this:
+
+![Developing With Step Functions](stepfunction_sm.png "Developing With Step Functions")
 
 The process starts by:
 
@@ -12,7 +16,7 @@ The process starts by:
 4. The process waits for the exam dedline to complete, before
 5. Validating the results
 6. Determining whether or not the student has sat the exam, or passed. Students get three attempts to pass the exam before...
-    * The incident is resolved, or 
+    * The incident is resolved, or
     * Administrative action is taken.
 
 ## The Architecture
@@ -61,7 +65,7 @@ Using Code Deploy allows us to use on-demand build environments, which are confi
 
 The application was initialised using the Cookiecutter SAM for Python Lambda. The cookiecutter template provides a wizard like command line experience to create a Serverless app based on SAM and Python 3.6.
 
-For more details check out Heitor Lessa's repository at  [heitorlessa/cookiecutter-aws-sam-python](href="https://github.com/heitorlessa/cookiecutter-aws-sam-python)
+For more details check out Heitor Lessa's repository at  [heitorlessa/cookiecutter-aws-sam-python](https://github.com/heitorlessa/cookiecutter-aws-sam-python)
 
 Also, a great video tutorial on how to use the Cookiecutter (and more) can be found on the AWS Twitch channel - [Build on Serverless | Building the "Simple Crypto Service" Python Project](https://www.twitch.tv/videos/248791444##)
 
