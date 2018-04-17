@@ -17,7 +17,7 @@ The process starts by:
 
 ## The Architecture
 
-This example uses a simple architecture, hosting a static website in Amazon [Simple Storage Service](https://aws.amazon.com/s3/) (Amazon S3) using Vue.js to invoke an Amazon API Gateway API. The API is configured with an AWS Service integration which invokes the AWS Step Function state machine for the plagiarism workflow. Along the way, the task states in the state machine are executing [AWS Lambda](https://aws.amazon.com/lambda/) functions which are periodically persisting data to Amazon DynamoDB and send messages via Amazon SNS.
+This example uses a simple architecture, hosting a static website in [Amazon Simple Storage Service](https://aws.amazon.com/s3/) (Amazon S3) using Vue.js to invoke an [Amazon API Gateway](https://aws.amazon.com/api-gateway/) API. The API is configured with an AWS Service integration which invokes the [AWS Step Function](https://aws.amazon.com/step-functions/) state machine for the plagiarism workflow. Along the way, the task states in the state machine are executing [AWS Lambda](https://aws.amazon.com/lambda/) functions which are periodically persisting data to [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) and send messages via [Amazon Simple Notification Service](https://aws.amazon.com/sns/).
 
 ![Developing With Step Functions](arch.png "Developing With Step Functions")
 
@@ -47,11 +47,11 @@ Using this approach allow development teams to automate their deployments throug
 
 Services used in the pipeline include:
 
-* AWS Code Pipeline
-* AWS Code Build
-* AWS CloudFormation
+* [AWS Code Pipeline](https://aws.amazon.com/codepipeline)
+* [AWS Code Build](https://aws.amazon.com/codebuild/)
+* [AWS CloudFormation](https://aws.amazon.com/cloudformation/)
 
-Using Code Deploy allows us to use on-demand build environments, which are configured using a buildspec.yaml file.
+Using Code Deploy allows us to use on-demand build environments, which are configured using a `buildspec.yaml` file.
 
 ![Developing With Step Functions Pipeline](pipeline.png "Developing With Step Functions Pipeline")
 
@@ -73,6 +73,7 @@ Also, a great video tutorial on how to use the Cookiecutter (and more) can be fo
 * [AWS Step Functions Developer Guide](https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html)
 * [statelint](https://github.com/awslabs/statelint)
 * [Amazon States Language](https://states-language.net/spec.html)
+* [Step Functions Ruby Activity Worker](https://github.com/aws-samples/step-functions-ruby-activity-worker) example
 
 ### Reference Architectures
 
