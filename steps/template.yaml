@@ -232,8 +232,14 @@ Resources:
               "Type": "Task",
               "Comment": "Set the next exam deadline for the student to complete the exam.",
               "Resource": "${ScheduleExamFunction.Arn}",
-              "Next": "SendNotification"
-
+              "Next": "SendNotification",
+              "Catch": [
+                        {
+                          "ErrorEquals": [ "StudentExceededAllowableExamRetries" ],
+                          "ResultPath": "$.Error", 
+                          "Next": "TakeAdministrativeAction"
+                        }
+                      ]
             },
             "SendNotification": {
               "Type": "Task",
@@ -244,7 +250,7 @@ Resources:
             "ExamConfirmationPending": {
               "Type": "Wait",
               "Comment": "Waiting period exam expiration deadline.",
-              "TimestampPath": "$.exam.exam_date",
+              "TimestampPath": "$.exams[0].exam_date",
               "Next": "ValidateExamResults"
             },
             "ValidateExamResults": {
@@ -257,33 +263,34 @@ Resources:
               "Type": "Choice",
               "Comment": "If the student has a score less than 67, they need to reschedule",
               "Choices": [{
-                  "Variable": "$.exam.score",
+                  "Variable": "$.last_exam_score",
                   "NumericGreaterThanEquals": 67,
                   "Next": "ResolveIncident"
                 },
                 {
                   "And": [{
-                      "Variable": "$.exam.score",
+                      "Variable": "$.last_exam_score",
                       "NumericLessThan": 66
                     },
                     {
-                      "Variable": "$.exam.score",
+                      "Variable": "$.last_exam_score",
                       "NumericGreaterThanEquals": 1
                     }
                   ],
                   "Next": "ScheduleExam"
                 },
                 {
-                  "Variable": "$.exam.score",
+                  "Variable": "$.last_exam_score",
                   "NumericEquals": 0,
                   "Next": "TakeAdministrativeAction"
                 }
               ]
             },
             "TakeAdministrativeAction": {
-              "Type": "Fail",
-              "Cause": "Failed to meet assessment criteria.",
-              "Error": "The student has failed to meet criteria for resolving the plagiarism assessment. Terminate student!"
+              "Type": "Task",
+              "Resource": "${TakeAdministrativeActionFunction.Arn}",
+              "Comment": "Take administrative action if student does not sit exam or fails all three attempts.",
+              "End": true
             },
             "ResolveIncident": {
               "Type": "Task",

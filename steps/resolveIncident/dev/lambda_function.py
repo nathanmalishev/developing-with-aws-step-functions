@@ -11,22 +11,26 @@ table = dynamodb.Table(incidents_table)
 
 def lambda_handler(event, context):
 
-    # update incident
-    table.update_item(
-        Key={
-            'incident_id': event['incident_id']
-        },
-        UpdateExpression='SET incident_resolved = :val1, resolution_date = :val2',
-        ExpressionAttributeValues={
-            ':val1': True,
-            ':val2': (datetime.now()).strftime('%Y-%m-%dT%H:%M:%SZ')
-        }
-    )
+    event['incident_resolved'] = True
+    event['resolution_date'] = (datetime.now()).strftime('%Y-%m-%dT%H:%M:%SZ')
 
-    updated_event = table.get_item(
-        Key={
-            'incident_id': event['incident_id'] 
-        }
-    )
+    # update incident
+    # table.update_item(
+    #     Key={
+    #         'incident_id': event['incident_id']
+    #     },
+    #     UpdateExpression='SET incident_resolved = :val1, resolution_date = :val2',
+    #     ExpressionAttributeValues={
+    #         ':val1': True,
+    #         ':val2': (datetime.now()).strftime('%Y-%m-%dT%H:%M:%SZ')
+    #     }
+    # )
+
+    # updated_event = table.get_item(
+    #     Key={
+    #         'incident_id': event['incident_id'] 
+    #     }
+    # )
     
-    return updated_event
+    # return updated_event
+    return event

@@ -31,8 +31,8 @@ def create_incident(incident_date, student_id):
         "incident_resolved": False
     }
 
-    table.put_item(
-        Item=new_incident
-    )
+    # table.put_item(
+    #     Item=new_incident
+    # )
 
     return new_incident

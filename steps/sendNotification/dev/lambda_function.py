@@ -11,17 +11,17 @@ topic = os.environ['TOPIC_ARN']
 
 def lambda_handler(event, context):
 
-    response = table.get_item(
-        Key={
-            'incident_id': event['incident_id']
-        }
-    )
+    # response = table.get_item(
+    #     Key={
+    #         'incident_id': event['incident_id']
+    #     }
+    # )
     
-    incident = response['Item']
+    # incident = response['Item']
     
     scheduled_exam = {
-        "incident_id": incident['incident_id'],
-        "exam": incident['exams'][-1]
+        "incident_id": event['incident_id'],
+        "exam": event['exams'][-1]
     }
     
     message = "Dear Student ID {0}, you have until {1} to complete you Plagiarism Violation test. Thank you.".format(event['student_id'], scheduled_exam['exam']['exam_date'])
@@ -33,4 +33,4 @@ def lambda_handler(event, context):
         Subject=subject
     )
 
-    return  scheduled_exam
+    return  event
